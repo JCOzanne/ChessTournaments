@@ -20,8 +20,7 @@ Le projet est organisé en plusieurs modules pour une meilleure gestion du code 
 ## Prérequis
 
 - Python 3.12
-- Les bibliothèques Python mentionnées dans requirements.txt
-
+- Les bibliothèques Python mentionnées dans requirements.txt  
 $ pip install -r requirements.txt
 
 ## Installation
@@ -33,24 +32,24 @@ $ git clone git@github.com:JCOzanne/ChessTournaments.git
 2. **Créer et activer l'environnement virtuel**
 
 - sur windows  
-$ cd ChessTournaments  
-$ python -m venv env  
-$ ~env\scripts\activate  
+cd ChessTournaments  
+python -m venv env  
+~env\scripts\activate  
 
 
 - sur MacOS / Linux  
-$ cd ChessTournaments  
-$ python3 -m venv env 
+cd ChessTournaments  
+python3 -m venv env   
 $ source/env/bin/activate
 
 3- **Lancer le programme**
 
 - sur windows :  
-$ python main.py  
+python main.py  
 
 
 - sur Mac OS / Linux :  
-$ python3 main.py  
+python3 main.py  
 
 4- **Utilisation**
 
@@ -77,7 +76,7 @@ Lorsque les matchs ont été renseignés, le programme vous propose de passer à
 5- **Rapport Flake8**
 
 Un rapport flake8 a été généré avec la commande :  
-$ flake8 controllers utils models views main.py --max-line=119 --format=html --htmldir=flake8-report
+flake8 controllers utils models views main.py --max-line=119 --format=html --htmldir=flake8-report
 
 
 
