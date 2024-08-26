@@ -3,6 +3,9 @@ from utils.data_manager import load_players, save_players
 
 
 def add_player():
+    """ create player objet and update players list
+    :return:
+    """
     last_name = input("Nom de famille: ")
     first_name = input("Prénom: ")
     birth_date = input("Date de naissance (JJ-MM-AAAA): ")

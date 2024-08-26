@@ -7,6 +7,9 @@ from utils.data_manager import load_tournaments, save_tournaments, load_players,
 
 
 def create_tournament():
+    """
+    :return: create tournament and update tournaments list
+    """
     name = input("Nom du tournoi: ")
     location = input("Lieu du tournoi: ")
     start_date = input("Date de début (JJ-MM-AAAA): ")
@@ -23,6 +26,11 @@ def create_tournament():
 
 
 def get_yes_no(prompt):
+
+    """
+    :param prompt:
+    :return: a message if the keyboard input is incorrect
+    """
     while True:
         response = input(prompt).lower()
         if response in ["oui", "non"]:
@@ -32,6 +40,10 @@ def get_yes_no(prompt):
 
 
 def validate_national_id(national_id):
+    """
+    :param national_id:
+    :return: a message if the national_id is incorrect
+    """
     if len(national_id) != 7:
         print("L'identifiant national doit contenir exactement 7 caractères.")
         return False
@@ -48,6 +60,10 @@ def validate_national_id(national_id):
 
 
 def add_players_to_tournament(tournament):
+    """
+    :param tournament:
+    :return: create, load player and save the players.json and tournaments.json files
+    """
     while True:
         choice = get_yes_no("Voulez-vous ajouter un joueur au tournoi? (oui/non): ")
         if choice == "non":
@@ -73,6 +89,10 @@ def add_players_to_tournament(tournament):
 
 
 def manage_rounds(tournament):
+    """
+    :param tournament:
+    :return: create round and add it to tournament, generate matches and save their results, close de round
+    """
     for round_num in range(1, tournament.rounds + 1):
         round_name = input(f"Nom de la ronde {round_num}: ")
         round = Round(round_name, tournament, start_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -99,6 +119,11 @@ def manage_rounds(tournament):
 
 
 def generate_matches(tournament, round):
+    """
+    :param tournament:
+    :param round:
+    :return:generate matches according to the specificities for each round and update tournaments list
+    """
     players = sorted(tournament.players_list, key=lambda p: p.points, reverse=True)
     matches = []
     for i in range(0, len(players), 2):
@@ -110,9 +135,14 @@ def generate_matches(tournament, round):
 
 
 def enter_match_results(round):
+    """
+    :param round:
+    :return: Allow user to enter match results ans update tournament list
+    """
     for match in round.matches:
         print(
-            f"Match entre {match.player1.last_name} {match.player1.first_name} et {match.player2.last_name} {match.player2.first_name}")
+            f"Match entre {match.player1.last_name} {match.player1.first_name} et "
+            f"{match.player2.last_name} {match.player2.first_name}")
         result = input("Résultat du match (1-0, 0-1, 0.5-0.5): ")
         if result == "1-0":
             match.score1 = 1
@@ -179,7 +209,8 @@ def display_tournament_rounds(tournament_name):
                 print(f"Date et heure de début : {round.start_time}")
                 print(f"Date et heure de fin : {round.end_time}")
                 for match in round.matches:
-                    print(
-                        f"  {match.player1.last_name} {match.player1.first_name} vs {match.player2.last_name} {match.player2.first_name} - Résultat : {match.score1} - {match.score2}")
+                    print(f" {match.player1.last_name} {match.player1.first_name} vs {match.player2.last_name} "
+                          f"{match.player2.first_name} - Résultat : {match.score1} - {match.score2}")
+
             return
     print("Tournoi non trouvé.")
