@@ -5,6 +5,9 @@ from models.tournament import Tournament
 
 
 def load_players():
+    """
+    :return: a list of instances of Player
+    """
     if not os.path.exists("data"):
         os.makedirs("data")
     if not os.path.exists("data/players.json"):
@@ -16,6 +19,10 @@ def load_players():
 
 
 def save_players(players):
+    """
+    :param players:
+    :return: a json file of Player Objects
+    """
     if not os.path.exists("data"):
         os.makedirs("data")
     with open("data/players.json", "w") as file:
@@ -23,6 +30,9 @@ def save_players(players):
 
 
 def load_tournaments():
+    """
+    :return: a list of instances of tournaments
+    """
     if not os.path.exists("data/tournaments"):
         os.makedirs("data/tournaments")
     tournaments = []
@@ -37,6 +47,10 @@ def load_tournaments():
 
 
 def save_tournaments(tournaments):
+    """
+    :param tournaments:
+    :return: a json file of Tournaments Objects
+    """
     if not os.path.exists("data/tournaments"):
         os.makedirs("data/tournaments")
     for tournament in tournaments:
