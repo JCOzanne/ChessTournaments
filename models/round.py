@@ -11,6 +11,9 @@ class Round:
         self.matches = matches
 
     def to_dict(self):
+        """
+        :return: object instance dictionary
+        """
         return {
             "name": self.name,
             "start_time": self.start_time,
@@ -20,6 +23,11 @@ class Round:
 
     @staticmethod
     def from_dict(data, tournament):
+        """
+        :param data:
+        :param tournament:
+        :return: object instance from dictionary
+        """
         return Round(
             data["name"],
             tournament,

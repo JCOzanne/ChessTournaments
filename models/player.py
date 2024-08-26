@@ -1,5 +1,3 @@
-import json
-
 
 class Player:
     def __init__(self, last_name, first_name, birth_date, national_id):
@@ -7,9 +5,12 @@ class Player:
         self.first_name = first_name
         self.birth_date = birth_date
         self.national_id = national_id
-        self.points = 0  # Ajout des points pour les joueurs
+        self.points = 0
 
     def to_dict(self):
+        """
+        :return: object instance dictionary
+        """
         return {
             "last_name": self.last_name,
             "first_name": self.first_name,
@@ -20,6 +21,10 @@ class Player:
 
     @staticmethod
     def from_dict(data):
+        """
+        :param data:
+        :return: object instance from dictionary
+        """
         player = Player(
             data["last_name"],
             data["first_name"],

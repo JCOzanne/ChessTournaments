@@ -9,6 +9,9 @@ class Match:
         self.score2 = score2
 
     def to_dict(self):
+        """
+        :return: object instance dictionary
+        """
         return {
             "player1": self.player1.to_dict(),
             "player2": self.player2.to_dict(),
@@ -18,6 +21,10 @@ class Match:
 
     @staticmethod
     def from_dict(data):
+        """
+        :param data:
+        :return: object instance from dictionary
+        """
         return Match(
             Player.from_dict(data["player1"]),
             Player.from_dict(data["player2"]),
