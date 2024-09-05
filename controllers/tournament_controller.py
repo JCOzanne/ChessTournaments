@@ -3,12 +3,11 @@ from models.match import Match
 from models.player import Player
 from models.round import Round
 from models.tournament import Tournament
-from utils.data_manager import load_tournaments, save_tournaments, load_players, save_players
-
+from utils.data_manager import load_tournaments, save_tournaments, load_players, save_players, save_state, load_state
 
 def create_tournament():
     """
-    :return: create tournament and update tournaments list
+    :return: a new tournament with data saved in a file
     """
     name = input("Nom du tournoi: ")
     location = input("Lieu du tournoi: ")
@@ -21,16 +20,15 @@ def create_tournament():
     tournaments.append(tournament)
     save_tournaments(tournaments)
     print("Tournoi créé avec succès!")
+
+    # Sauvegarder l'état avant d'ajouter les joueurs
+    save_state({"tournament": tournament.to_dict(), "step": "add_players"})
+
+    # Appeler l'ajout des joueurs et continuer la gestion du tournoi
     add_players_to_tournament(tournament)
-    manage_rounds(tournament)
 
 
 def get_yes_no(prompt):
-
-    """
-    :param prompt:
-    :return: a message if the keyboard input is incorrect
-    """
     while True:
         response = input(prompt).lower()
         if response in ["oui", "non"]:
@@ -40,34 +38,30 @@ def get_yes_no(prompt):
 
 
 def validate_national_id(national_id):
-    """
-    :param national_id:
-    :return: a message if the national_id is incorrect
-    """
     if len(national_id) != 7:
         print("L'identifiant national doit contenir exactement 7 caractères.")
         return False
-
     if not national_id[:2].isalpha():
         print("Les deux premiers caractères doivent être des lettres.")
         return False
-
     if not national_id[2:].isdigit():
         print("Les cinq derniers caractères doivent être des chiffres.")
         return False
-
     return True
 
 
 def add_players_to_tournament(tournament):
     """
     :param tournament:
-    :return: create, load player and save the players.json and tournaments.json files
+    :return: Adds players to the created tournament.
     """
     while True:
         choice = get_yes_no("Voulez-vous ajouter un joueur au tournoi? (oui/non): ")
         if choice == "non":
+            save_tournaments([tournament])
+            print("Tous les joueurs ont été ajoutés.")
             break
+
         last_name = input("Nom de famille: ")
         first_name = input("Prénom: ")
         birth_date = input("Date de naissance (JJ-MM-AAAA): ")
@@ -76,53 +70,63 @@ def add_players_to_tournament(tournament):
             national_id = input("Identifiant national d'échecs (2 lettres suivies de 5 chiffres): ")
             if validate_national_id(national_id):
                 break
+
         player = Player(last_name, first_name, birth_date, national_id)
         tournament.players_list.append(player)
+        save_tournaments([tournament])
+        save_state({"tournament": tournament.to_dict(), "step": "add_players"})
 
-        # Ajouter le joueur à la liste globale des joueurs
         players = load_players()
         players.append(player)
         save_players(players)
 
-        save_tournaments([tournament])
         print("Joueur ajouté avec succès!")
 
+    next_step = get_yes_no("Voulez-vous passer à la gestion des rondes ? (oui/non): ")
+    if next_step == "oui":
+        manage_rounds(tournament)
+    else:
+        print("Vous pouvez revenir plus tard pour continuer.")
+        return
 
-def manage_rounds(tournament):
+
+def manage_rounds(tournament, start_round=1):
     """
+
     :param tournament:
-    :return: create round and add it to tournament, generate matches and save their results, close de round
+    :param start_round:
+    :return: Manages tournament rounds, generates matches, records results
     """
-    for round_num in range(1, tournament.rounds + 1):
+    for round_num in range(start_round, tournament.rounds + 1):
         round_name = input(f"Nom de la ronde {round_num}: ")
         round = Round(round_name, tournament, start_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         tournament.rounds_list.append(round)
         save_tournaments([tournament])
         print(f"Date et heure de début de la ronde {round_num}: {round.start_time}")
 
-        # Générer les matchs pour la ronde
         generate_matches(tournament, round)
-
-        # Demander les résultats des matchs
         enter_match_results(round)
 
-        # Marquer la ronde comme terminée
         round.end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         save_tournaments([tournament])
         print(f"Date et heure de fin de la ronde {round_num}: {round.end_time}")
 
-        # Passer à la ronde suivante
+        # Sauvegarder l'état après avoir fini la ronde
+        save_state({"tournament": tournament.to_dict(), "step": "manage_rounds", "round_num": round_num + 1})
+
         if round_num < tournament.rounds:
             choice = input("Voulez-vous passer à la ronde suivante? (oui/non): ").lower()
             if choice == "non":
                 break
+
+    save_state(None)
 
 
 def generate_matches(tournament, round):
     """
     :param tournament:
     :param round:
-    :return:generate matches according to the specificities for each round and update tournaments list
+    :return: Generates matches for a round of the tournament.
     """
     players = sorted(tournament.players_list, key=lambda p: p.points, reverse=True)
     matches = []
@@ -135,10 +139,6 @@ def generate_matches(tournament, round):
 
 
 def enter_match_results(round):
-    """
-    :param round:
-    :return: Allow user to enter match results ans update tournament list
-    """
     for match in round.matches:
         print(
             f"Match entre {match.player1.last_name} {match.player1.first_name} et "
@@ -161,7 +161,18 @@ def enter_match_results(round):
             print("Résultat invalide. Veuillez réessayer.")
             enter_match_results(round)
             return
+
+        # Mise à jour de l'état avec la ronde actuelle et le tournoi
+        save_state({
+            "tournament": round.tournament.to_dict(),
+            "step": "enter_match_results",
+            "round_num": round.tournament.current_round
+        })
+
+    # Une fois les résultats de la ronde saisis, on passe à la ronde suivante
+    round.tournament.current_round += 1
     save_tournaments([round.tournament])
+    save_state(None)  # Effacer l'état après la fin de cette étape
 
 
 def display_tournaments():
@@ -211,6 +222,33 @@ def display_tournament_rounds(tournament_name):
                 for match in round.matches:
                     print(f" {match.player1.last_name} {match.player1.first_name} vs {match.player2.last_name} "
                           f"{match.player2.first_name} - Résultat : {match.score1} - {match.score2}")
-
             return
     print("Tournoi non trouvé.")
+
+
+def resume_tournament(state):
+    """
+    :param state:
+    :return: Resumes a tournament at the previously saved stage.
+    """
+    tournament_data = state.get("tournament")
+    step = state.get("step")
+
+    if not tournament_data:
+        print("Aucun tournoi en cours trouvé.")
+        return
+
+    tournament = Tournament.from_dict(tournament_data)
+    print(f"Reprise du tournoi: {tournament.name}")
+
+    if step == "add_players":
+        add_players_to_tournament(tournament)
+    elif step == "manage_rounds":
+        round_num = state.get("round_num", 1)
+        manage_rounds(tournament, start_round=round_num)
+    elif step == "enter_match_results":
+        for round in tournament.rounds_list:
+            enter_match_results(round)
+
+    save_state({"tournament": tournament.to_dict(), "step": step})
+

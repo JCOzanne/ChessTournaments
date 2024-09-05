@@ -1,5 +1,6 @@
 from models.player import Player
 from utils.data_manager import load_players, save_players
+from utils.data_manager import save_state
 
 
 def add_player():
