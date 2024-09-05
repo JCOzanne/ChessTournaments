@@ -3,7 +3,6 @@ import os
 from models.player import Player
 from models.tournament import Tournament
 
-
 def load_players():
     """
     :return: a list of instances of Player
@@ -16,7 +15,6 @@ def load_players():
     with open("data/players.json", "r") as file:
         data = json.load(file)
         return [Player.from_dict(player_data) for player_data in data]
-
 
 def save_players(players):
     """
@@ -57,3 +55,21 @@ def save_tournaments(tournaments):
         file_name = f"data/tournaments/{tournament.name}.json"
         with open(file_name, "w") as file:
             json.dump(tournament.to_dict(), file, indent=4)
+
+def save_state(state):
+    """
+    :param state:
+    :return: Saves the current state of the program to a JSON file.
+    """
+    with open('data/state.json', 'w') as f:
+        json.dump(state, f)
+
+def load_state():
+    """
+    :return: Loads the previously saved state of the JSON file.
+    """
+    try:
+        with open('data/state.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
