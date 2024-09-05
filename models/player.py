@@ -1,4 +1,3 @@
-
 class Player:
     def __init__(self, last_name, first_name, birth_date, national_id):
         self.last_name = last_name

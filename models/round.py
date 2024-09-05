@@ -3,12 +3,12 @@ from models.match import Match
 
 
 class Round:
-    def __init__(self, name, tournament, start_time=None, end_time=None, matches=[]):
+    def __init__(self, name, tournament, start_time=None, end_time=None, matches=None):
         self.name = name
         self.tournament = tournament
         self.start_time = start_time or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.end_time = end_time
-        self.matches = matches
+        self.matches = matches if matches is not None else []
 
     def to_dict(self):
         """
