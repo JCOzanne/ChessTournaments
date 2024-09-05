@@ -1,18 +1,25 @@
-from views.main_view import display_main_menu
+from utils.data_manager import load_state, save_state
 from controllers.tournament_controller import (
     create_tournament,
     display_tournaments,
     display_tournament_players,
     display_tournament_details,
-    display_tournament_rounds
+    display_tournament_rounds,
+    resume_tournament
 )
 from views.report_view import display_report_menu
+from views.main_view import display_main_menu
 from controllers.player_controller import display_players
 
-
 def main():
+    state = load_state()
+
+    if state:
+        resume_tournament(state)
+
     while True:
         choice = display_main_menu()
+
         if choice == "1":
             create_tournament()
 
@@ -36,11 +43,10 @@ def main():
                     break
                 else:
                     print("Choix invalide. Veuillez réessayer.")
-        elif choice == "3":
+        elif choice == "3" and state:
+            resume_tournament(state)
+        elif choice == "4":
             break
-        else:
-            print("Choix invalide. Veuillez réessayer.")
-
 
 if __name__ == "__main__":
     main()
