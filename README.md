@@ -56,8 +56,9 @@ python3 main.py
 Lorsque vous lancer le programme, le menu principal s'affiche et vous propose :  
 
 1- créer un tournoi  
-2- générer un rapport  
-3- quitter
+2- générer un rapport
+3- "Revenir où je me suis arrêté"
+4- quitter
 
 **Le menu 1** permet de créer un nouveau tournoi avec un nom, un lieu et une date et un nombre de rondes.  
 Le programme vous propose d'ajouter les joueurs du tournoi avec leur nom, prénom, date de naissance et numéro national d'échecs.  
@@ -72,6 +73,10 @@ Lorsque les matchs ont été renseignés, le programme vous propose de passer à
 - liste des joueurs d'un tournoi donné par ordre alphabétique,
 - liste de toutes les rondes et de tous les matchs d'un tournoi donné
 - retour au menu principal.
+
+**Le menu 3** permet de :
+- revenir à la saisie de joueurs si on a arrêté le programme en cours (pour être enregistré un joueur doit avoir un nom, un prénom \ une date de naissane et un identifiant d'échecs)
+- revenir à la saisie de matchs, de ronde si on a arrêté le programme en cours
 
 5- **Rapport Flake8**
 
